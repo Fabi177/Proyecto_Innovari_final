@@ -2,9 +2,10 @@
   "family": "innovari-task",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
-  "cpu": "256",
-  "memory": "512",
+  "cpu": "512",
+  "memory": "1024",
   "executionRoleArn": "arn:aws:iam::009661763899:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::009661763899:role/ecsTaskExecutionRole",
   "containerDefinitions": [
     {
       "name": "innovari-app",
@@ -16,17 +17,61 @@
           "protocol": "tcp"
         }
       ],
-      "command": ["php", "artisan", "serve", "--host=0.0.0.0", "--port=80"],
       "environment": [
         {
           "name": "APP_ENV",
           "value": "production"
         },
         {
+          "name": "APP_DEBUG",
+          "value": "false"
+        },
+        {
+          "name": "DB_CONNECTION",
+          "value": "mysql"
+        },
+        {
+          "name": "DB_HOST",
+          "value": "TU_RDS_ENDPOINT"
+        },
+        {
+          "name": "DB_PORT",
+          "value": "3306"
+        },
+        {
+          "name": "DB_DATABASE",
+          "value": "innovari"
+        },
+        {
           "name": "DB_USERNAME",
           "value": "admin"
         }
-      ]
+      ],
+      "secrets": [
+        {
+          "name": "APP_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:009661763899:secret:innovari/app-key"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:009661763899:secret:innovari/db-password"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/innovari",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost/up || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      }
     }
   ]
 }
