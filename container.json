@@ -32,7 +32,7 @@
         },
         {
           "name": "DB_HOST",
-          "value": "TU_RDS_ENDPOINT"
+          "value": "innovari-db.csjcu0ycglr9.us-east-1.rds.amazonaws.com"
         },
         {
           "name": "DB_PORT",
@@ -40,7 +40,7 @@
         },
         {
           "name": "DB_DATABASE",
-          "value": "innovari"
+          "value": "historial_clinico"
         },
         {
           "name": "DB_USERNAME",
@@ -50,11 +50,11 @@
       "secrets": [
         {
           "name": "APP_KEY",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:009661763899:secret:innovari/app-key"
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:009661763899:secret:innovari/app-key-r8QWA2"
         },
         {
           "name": "DB_PASSWORD",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:009661763899:secret:innovari/db-password"
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:009661763899:secret:innovari/db-password-XkGFvo"
         }
       ],
       "logConfiguration": {
