@@ -1,0 +1,29 @@
+{
+  "family": "innovari-task",
+  "executionRoleArn": "arn:aws:iam::009661763899:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "containerDefinitions": [
+    {
+      "name": "innovari-app",
+      "image": "009661763899.dkr.ecr.us-east-1.amazonaws.com/innovari:latest",
+      "cpu": 0,
+      "memory": 512,
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
+        }
+      ],
+      "command": ["php", "artisan", "serve", "--host=0.0.0.0", "--port=80"],
+      "environment": [
+        {"name": "APP_ENV", "value": "production"},
+        {"name": "DB_USERNAME", "value": "admin"}
+      ]
+    }
+  ]
+}
