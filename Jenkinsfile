@@ -4,17 +4,15 @@ pipeline {
     environment {
         AWS_REGION = 'us-east-1'
         ECR_REPO = '009661763899.dkr.ecr.us-east-1.amazonaws.com/innovari'
-        CLUSTER_NAME = 'innovari-cluster'
-        SERVICE_NAME = 'innovari-service'
-        TASK_FAMILY = 'innovari-task'
-        CONTAINER_NAME = 'innovari-app'
-        AWS_CREDENTIALS_ID = 'aws-jenkins-credentials'
+        ECS_CLUSTER = 'innovari-cluster'
+        ECS_SERVICE = 'innovari-service'
+        TASK_DEFINITION_FAMILY = 'innovari-task'
     }
 
     stages {
         stage('Checkout SCM') {
             steps {
-                git branch: 'main', url: 'https://github.com/Fabi177/Proyecto_Innovari_final.git'
+                checkout scm
             }
         }
 
@@ -22,11 +20,12 @@ pipeline {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: "${AWS_CREDENTIALS_ID}"
+                    credentialsId: 'aws-credentials', // Cambiá por el ID de tus credenciales en Jenkins
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                 ]]) {
                     sh """
-                        aws ecr get-login-password --region ${AWS_REGION} | \
-                        docker login --username AWS --password-stdin ${ECR_REPO}
+                        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO
                     """
                 }
             }
@@ -34,17 +33,16 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh """
-                    docker build -t ${ECR_REPO}:latest .
-                """
+                script {
+                    // Usamos el Dockerfile que está en docker/php/Dockerfile
+                    docker.build("$ECR_REPO:latest", "-f docker/php/Dockerfile .")
+                }
             }
         }
 
         stage('Push to ECR') {
             steps {
-                sh """
-                    docker push ${ECR_REPO}:latest
-                """
+                sh "docker push $ECR_REPO:latest"
             }
         }
 
@@ -53,7 +51,7 @@ pipeline {
                 sh """
                     aws ecs register-task-definition \
                         --cli-input-json file://container.json \
-                        --region ${AWS_REGION}
+                        --region $AWS_REGION
                 """
             }
         }
@@ -62,10 +60,10 @@ pipeline {
             steps {
                 sh """
                     aws ecs update-service \
-                        --cluster ${CLUSTER_NAME} \
-                        --service ${SERVICE_NAME} \
+                        --cluster $ECS_CLUSTER \
+                        --service $ECS_SERVICE \
                         --force-new-deployment \
-                        --region ${AWS_REGION}
+                        --region $AWS_REGION
                 """
             }
         }
@@ -73,10 +71,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Despliegue completado correctamente"
+            echo '✅ Deploy exitoso!'
         }
         failure {
-            echo "❌ Hubo un error en el pipeline"
+            echo '❌ Hubo un error en el pipeline'
         }
     }
 }
