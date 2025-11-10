@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+// 👇 Agregá esta línea:
+use Spatie\Permission\Traits\HasRoles;
+
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    // 👇 Agregá HasRoles acá:
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
