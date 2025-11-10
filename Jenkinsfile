@@ -5,7 +5,7 @@ pipeline {
         AWS_REGION = 'us-east-1'
         ECR_REPO = '009661763899.dkr.ecr.us-east-1.amazonaws.com/innovari'
         IMAGE_TAG = 'latest'
-        AWS_CREDENTIALS_ID = 'aws-jenkins-credentials' // ID de las credenciales configuradas en Jenkins
+        AWS_CREDENTIALS_ID = 'aws-jenkins-credentials'
         GIT_REPO = 'https://github.com/Fabi177/Proyecto_Innovari_.git'
         GIT_BRANCH = 'main' // cambiar si tu rama principal tiene otro nombre
         ECS_CLUSTER = 'innovari-cluster'
