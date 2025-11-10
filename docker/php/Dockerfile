@@ -1,4 +1,4 @@
-FROM php:8.3-fpm
+FROM php:8.3-apache 
 
 # Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
@@ -29,6 +29,8 @@ COPY . .
 # Instalar dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader
 
+RUN php artisan key:generate --no-interaction
+
 # Configurar permisos
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
@@ -57,4 +59,4 @@ RUN chmod +x /start.sh
 
 EXPOSE 80
 
-CMD ["/start.sh"]
+CMD ["apache2-foreground"]
